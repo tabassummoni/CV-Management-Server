@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import createAuthRouter from "./src/routes/auth.js";
 import setupGoogleAuth from "./src/config/googleAuth.js";
-
+import cvRoute from "./src/routes/cv.js";
 dotenv.config();
 
 const app = express();
@@ -22,6 +22,7 @@ app.use(
 
 app.use(express.json());
 app.use(googleAuthManager.initialize());
+app.use("/api/cv", cvRoute);
 
 app.get("/", (req, res) => {
   res.json({
