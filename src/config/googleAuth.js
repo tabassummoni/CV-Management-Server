@@ -1,4 +1,3 @@
-// src/config/googleAuth.js
 import passportManager from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
@@ -21,9 +20,6 @@ export default function setupGoogleAuth(prisma) {
               data: {
                 email: profile.emails[0].value,
                 name: profile.displayName,
-                // Google দিয়ে সাইন আপ করলে পাসওয়ার্ডের প্রয়োজন নেই
-                // তাই এই ফিল্ডটি খালি রাখতে পারেন বা null সেট করতে পারেন
-                // তবে schema.prisma তে পাসওয়ার্ড optional হতে হবে।
               },
             });
           }
