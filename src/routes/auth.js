@@ -82,7 +82,6 @@ export default function createAuthRouter(googleAuthManager, prisma) {
       const token = jwt.sign(
         { id: user.id },
         process.env.JWT_SECRET || 'secret_key',
-        { expiresIn: '7d' }
       );
 
       res.json({
@@ -96,9 +95,7 @@ export default function createAuthRouter(googleAuthManager, prisma) {
     }
   });
 
-  /**
-   * 🌐 Google LOgin 
-   */
+
   router.get(
     '/google',
     googleAuthManager.authenticate('google', { scope: ['profile', 'email'] })

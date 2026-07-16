@@ -16,18 +16,20 @@ model User {
   cvs       CV[]
 }
 model CV {
-  id           Int      @id @default(autoincrement())
-  title        String   
-  fullName     String
-  email        String
-  phone        String?
-  summary      String?  @db.Text
-  skills       String   
-  ieltsScore   String?  
-  experience   String?  @db.Text
-  education    String?  @db.Text
-  userId       Int      
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String   
+  fullName    String   @default("") 
+  email       String   @default("") 
+  phone       String?
+  summary     String?  @db.Text
+  skills      String   @default("") 
+  ieltsScore  String?  
+  experience  String?  @db.Text
+  education   String?  @db.Text
+  version     Int      @default(1)
+  isPublished Boolean  @default(false)
+  userId      Int      
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
