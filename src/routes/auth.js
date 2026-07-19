@@ -5,16 +5,14 @@ import bcrypt from 'bcryptjs';
 export default function createAuthRouter(googleAuthManager, prisma) {
   const router = express.Router();
 
-  // Local SignUp)
   router.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body; 
 
     if (!email || !password || !name) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
     try {
-      
       const existingUser = await prisma.user.findUnique({
         where: { email },
       });
@@ -23,39 +21,40 @@ export default function createAuthRouter(googleAuthManager, prisma) {
         return res.status(400).json({ error: 'Email already exists' });
       }
 
-      
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      //make new user 
+     
+      const finalRole = role || 'CANDIDATE';
+
+     
       const newUser = await prisma.user.create({
         data: {
           name,
           email,
           password: hashedPassword,
+          role: finalRole, 
         },
       });
 
-      // JWT
       const token = jwt.sign(
-        { id: newUser.id },
+        { id: newUser.id, role: newUser.role },
         process.env.JWT_SECRET || 'secret_key',
         { expiresIn: '7d' }
       );
 
       res.status(201).json({
+        success: true,
         message: 'Signup successful!',
         token,
-        user: { id: newUser.id, name: newUser.name, email: newUser.email },
+        user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role },
       });
     } catch (error) {
-   
       console.error('Signup Error Detail:', error);
       res.status(500).json({ error: 'Internal server error during signup' });
     }
   });
 
-  // 🔑  (Local Login)
   router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -64,7 +63,6 @@ export default function createAuthRouter(googleAuthManager, prisma) {
     }
 
     try {
-      // search for the user in the database
       const user = await prisma.user.findUnique({
         where: { email },
       });
@@ -78,23 +76,23 @@ export default function createAuthRouter(googleAuthManager, prisma) {
         return res.status(400).json({ error: 'Invalid email or password' });
       }
 
-      // JWT token making
       const token = jwt.sign(
-        { id: user.id },
+        { id: user.id, role: user.role },
         process.env.JWT_SECRET || 'secret_key',
+        { expiresIn: '7d' }
       );
 
       res.json({
+        success: true,
         message: 'Login successful!',
         token,
-        user: { id: user.id, name: user.name, email: user.email },
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
       });
     } catch (error) {
       console.error('Login Error Detail:', error);
       res.status(500).json({ error: 'Internal server error during login' });
     }
   });
-
 
   router.get(
     '/google',
@@ -107,15 +105,38 @@ export default function createAuthRouter(googleAuthManager, prisma) {
       session: false,
       failureRedirect: '/login',
     }),
-    (req, res) => {
+    async (req, res) => {
       try {
+        const googleUser = req.user;
+
+        let user = await prisma.user.findUnique({
+          where: { email: googleUser.email },
+        });
+        if (!user) {
+          user = await prisma.user.create({
+            data: {
+              email: googleUser.email,
+              name: googleUser.name,
+              googleId: googleUser.id,
+              role: 'CANDIDATE', 
+            },
+          });
+        }
         const token = jwt.sign(
-          { id: req.user.id },
+          { id: user.id, role: user.role },
           process.env.JWT_SECRET || 'secret_key',
           { expiresIn: '7d' }
         );
 
-        res.redirect(`http://localhost:5173/login-success?token=${token}`);
+        const userForClient = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+
+        const userParam = encodeURIComponent(JSON.stringify(userForClient));
+        res.redirect(`http://localhost:5173/login-success?token=${token}&user=${userParam}`);
       } catch (error) {
         console.error('Callback Redirection Error:', error);
         res
