@@ -8,7 +8,8 @@
     "dev": "nodemon index.js",
     "prisma": "prisma",
     "db:push": "prisma db push",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -28,5 +29,9 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
-  }
+  },
+  "engines": {
+  "node": "20.18.0"
+}
+  
 }
