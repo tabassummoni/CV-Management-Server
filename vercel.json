@@ -6,15 +6,15 @@
       "use": "@vercel/node"
     }
   ],
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 60
+    }
+  },
   "routes": [
     {
       "src": "/(.*)",
       "dest": "index.js"
     }
-  ],
-  "functions": {
-    "index.js": {
-      "includeFiles": "node_modules/.prisma/client/**"
-    }
-  }
+  ]
 }
