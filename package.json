@@ -10,12 +10,8 @@
     "db:push": "prisma db push",
     "generate": "prisma generate"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@prisma/client": "^6.19.3",
+    "@prisma/client": "6.16.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
@@ -27,9 +23,9 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14",
-    "prisma": "^6.19.3"
+    "prisma": "6.16.2"
   },
- "engines": {
-  "node": "24.x"
-}
+  "engines": {
+    "node": "24.x"
+  }
 }
