@@ -38,4 +38,8 @@ Ensure you have `Node.js` (v18+) and `npm` installed on your workstation.
 
 ### 2. Clone the Repository
 ```bash
-git clone
+git clone [repo link]
+
+cd cv-management-client
+npm install
+npm run dev
