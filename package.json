@@ -8,8 +8,7 @@
     "dev": "nodemon index.js",
     "prisma": "prisma",
     "db:push": "prisma db push",
-    "generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "generate": "prisma generate"
   },
   "keywords": [],
   "author": "",
