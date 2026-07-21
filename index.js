@@ -28,7 +28,7 @@ const corsOptions = {
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error('CORS policy does not allow access from this Origin'));
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
