@@ -9,7 +9,6 @@ import cvRouter from './src/routes/cv.js';
 import positionRouter from './src/routes/position.js';
 import usersRouter from './src/routes/users.js';
 import statsRouter from './src/routes/stats.js';
-import commentsRouter from './src/routes/comments.js';
 import googleAuthManager from './src/config/passport.js';
 
 dotenv.config();
@@ -48,7 +47,6 @@ app.use('/api/cv', cvRouter);
 app.use('/api/position', positionRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/stats', statsRouter);
-app.use('/api/comments', commentsRouter);
 
 app.get('/', (req, res) => {
   res.send('CV Management Server is running!');
