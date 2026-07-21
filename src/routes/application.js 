@@ -1,0 +1,47 @@
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+
+const router = express.Router();
+const prisma = new PrismaClient();
+
+router.post('/', async (req, res) => {
+  try {
+    const { userId, cvId, positionId } = req.body;
+
+    if (!userId || !cvId || !positionId) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const newApplication = await prisma.application.create({
+      data: {
+        userId: parseInt(userId),
+        cvId: parseInt(cvId),
+        positionId: parseInt(positionId)
+      }
+    });
+
+    return res.status(201).json({ success: true, application: newApplication });
+  } catch (error) {
+    console.error("🚨 Application DB Error:", error);
+    return res.status(500).json({ error: 'Failed to process application' });
+  }
+});
+
+// 📌 রিক্রুটারদের গেট রাউটটাও চেক করে নাও
+router.get('/all', async (req, res) => {
+  try {
+    const applications = await prisma.application.findMany({
+      include: {
+        user: { select: { name: true, email: true } },
+        position: { select: { title: true } },
+        cv: { select: { id: true, title: true, fullName: true, email: true, phone: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    return res.json(applications);
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to fetch applications' });
+  }
+});
+
+export default router;
