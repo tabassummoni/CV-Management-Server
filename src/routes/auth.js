@@ -136,8 +136,10 @@ export default function createAuthRouter(googleAuthManager, prisma) {
         };
 
         const userParam = encodeURIComponent(JSON.stringify(userForClient));
-        res.redirect(`http://localhost:5173/login-success?token=${token}&user=${userParam}`);
-      } catch (error) {
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/login-success?token=${token}&user=${userParam}`);
+      }
+      catch (error) {
         console.error('Callback Redirection Error:', error);
         res
           .status(500)
