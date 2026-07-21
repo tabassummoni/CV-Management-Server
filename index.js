@@ -1,62 +1,26 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
-import createAuthRouter from "./src/routes/auth.js";
-import setupGoogleAuth from "./src/config/googleAuth.js";
-import cvRouter from "./src/routes/cv.js"; 
-import positionRoutes from "./src/routes/position.js";
-import attributeRoutes from "./src/routes/attribute.js";
-import applicationCvRoutes from "./src/routes/applicationCv.js";
-import adminRouter from "./src/routes/routes/admin.js";
-
-dotenv.config();
-
+const express = require('express');
+const cors = require('cors');
 const app = express();
-const prisma = new PrismaClient();
-
-const googleAuthManager = setupGoogleAuth(prisma);
-const authRouter = createAuthRouter(googleAuthManager, prisma);
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  process.env.FRONTEND_URL,
-].filter(Boolean); 
+  'https://cv-management-client-peoq.vercel.app', 
+  'https://cv-management-client.vercel.app',     
+  'http://localhost:5173'                        
+];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Postman বা Server-to-server request-এর জন্য !origin allow করা হয়েছে
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy does not allow access from this Origin'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
-app.use(express.json());
-app.use(googleAuthManager.initialize());
-
-// API Routes
-app.use("/api/cv", cvRouter); 
-app.use("/api/position", positionRoutes);
-app.use("/api/attribute", attributeRoutes);
-app.use('/api/applications', applicationCvRoutes);
-app.use('/api/admin', adminRouter);
-app.use("/api/auth", authRouter);
-
-app.get("/", (req, res) => {
-  res.json({
-    message: "CV Management API is running!",
-  });
-});
-
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-export default app;
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); 
