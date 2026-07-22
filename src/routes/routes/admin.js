@@ -4,8 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// 📊 ১. ফুটারে এবং স্ট্যাটস কার্ডের সব ভ্যালু একসাথে কাউন্ট করার এন্ডপয়েন্ট
-// PATH: GET ${API_BASE_URL}/api/stats/all
+
 router.get('/stats/all', async (req, res) => {
   try {
     const [totalUsers, totalCvs, totalApplications, totalPositions] = await Promise.all([
@@ -27,8 +26,6 @@ router.get('/stats/all', async (req, res) => {
   }
 });
 
-// 👥 ২. "All Users" এবং "All Recruiters" মেনুর জন্য সব ইউজারের ডাটা আনা
-// PATH: GET ${API_BASE_URL}/api/users/all
 router.get('/users/all', async (req, res) => {
   try {
     const users = await prisma.user.findMany({
@@ -46,8 +43,7 @@ router.get('/users/all', async (req, res) => {
   }
 });
 
-// 💼 ৩. "Applications" মেনুর জন্য ডাটাবেজের সব অ্যাপ্লিকেশন নিয়ে আসা
-// PATH: GET ${API_BASE_URL}/api/applications/all
+
 router.get('/applications/all', async (req, res) => {
   try {
     const applications = await prisma.application.findMany({
@@ -63,8 +59,7 @@ router.get('/applications/all', async (req, res) => {
   }
 });
 
-// 📄 ৪. "Cvs" মেনুর জন্য ডাটাবেজের সব সিভি লিস্ট নিয়ে আসা
-// PATH: GET ${API_BASE_URL}/api/cvs/all
+
 router.get('/cvs/all', async (req, res) => {
   try {
     const cvs = await prisma.cV.findMany();
@@ -75,8 +70,7 @@ router.get('/cvs/all', async (req, res) => {
   }
 });
 
-// ⚠️ ৫. পাবেল ভাইয়ের রিকোয়ারমেন্ট: কোনো স্প্যাম বা অনাকাঙ্ক্ষিত ইউজার ডিলিট করা
-// PATH: DELETE ${API_BASE_URL}/api/users/:id
+
 router.delete('/users/:id', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
@@ -89,11 +83,11 @@ router.delete('/users/:id', async (req, res) => {
     return res.status(500).json({ error: 'Failed to remove user' });
   }
 });
-// 📌 ফ্রন্টএন্ডের /api/admin/positions/all এর সাথে হুবহু মিল রেখে রাউট:
+
 router.get('/positions/all', async (req, res) => {
   try {
     const positions = await prisma.position.findMany({
-      include: { attributes: true } // তোমার স্কিমার অ্যাট্রিবিউটসহ সব পজিশন নিয়ে আসবে
+      include: { attributes: true } 
     });
     return res.json(positions);
   } catch (error) {

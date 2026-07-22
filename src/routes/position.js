@@ -26,7 +26,6 @@ router.post('/create', async (req, res) => {
         description,
         maxProjects: parseInt(maxProjects) || 3,
         projectTags: projectTags || [],
-        // 📅 ২. ডেডলাইন ডাটাবেজে সেভ করার আগে ভ্যালিড ডেট অবজেক্টে রূপান্তর করে নিলাম
         deadline: deadline ? new Date(deadline) : null,
         attributes: {
           connect: (attributeIds || []).map(id => ({ id: parseInt(id) }))
@@ -70,9 +69,9 @@ router.put('/:id', async (req, res) => {
         maxProjects: parseInt(maxProjects) || 3,
         projectTags: projectTags || [],
         deadline: deadline ? new Date(deadline) : null,
-        version: { increment: 1 }, // ভার্সন ১ বাড়ানো হলো
+        version: { increment: 1 }, 
         attributes: {
-          set: (attributeIds || []).map(id => ({ id: parseInt(id) })) // ওল্ড অ্যাট্রিবিউট রিপ্লেস করবে
+          set: (attributeIds || []).map(id => ({ id: parseInt(id) })) 
         }
       },
       include: { attributes: true }
@@ -139,7 +138,7 @@ router.post('/add', async (req, res) => {
     const newAttribute = await prisma.attribute.create({
       data: {
         name: name,
-        dataType: dataType, // 'TEXT', 'NUMBER', বা 'BOOLEAN'
+        dataType: dataType, 
         categoryId: defaultCategory.id
       }
     });
@@ -163,26 +162,47 @@ router.delete('/:id', async (req, res) => {
     return res.status(500).json({ error: 'Failed to delete position' });
   }
 });
-
 router.get('/:id', async (req, res) => {
   try {
-    const cv = await prisma.cv.findUnique({
-      where: { id: parseInt(req.params.id) },
-      include: {
-        position: {
-          include: {
-            comments: {
-              where: { content: { startsWith: 'REACT:' } } // শুধু রিয়্যাক্টগুলো ফিল্টার করে আনবে
-            }
-          }
-        }
-      }
+    const positionId = parseInt(req.params.id);
+
+    if (isNaN(positionId)) {
+      return res.status(400).json({ error: 'Invalid Position ID' });
+    }
+
+    const position = await prisma.position.findUnique({
+      where: { id: positionId },
+      include: { attributes: true } 
     });
-    return res.json(cv);
+
+    if (!position) {
+      return res.status(404).json({ error: 'Position not found' });
+    }
+
+    return res.json(position);
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to fetch CV' });
+    console.error("🚨 Error fetching position by ID:", error);
+    return res.status(500).json({ error: 'Failed to fetch position details' });
   }
 });
+// router.get('/:id', async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const position = await prisma.position.findUnique({
+//       where: { id: parseInt(req.params.id) },
+//       include: {
+//         attributes: true,
+//       }
+//     });
+//     if (!position) {
+//       return res.status(404).json({ error: 'Position not found' });
+//     }
+//     return res.json(position);
+//   } catch (error) {
+//     console.error("🚨 Error fetching position:", error);
+//     return res.status(500).json({ error: 'Failed to fetch position' });
+//   }
+// });
 router.post('/bulk-delete', async (req, res) => {
   try {
     const { ids } = req.body;

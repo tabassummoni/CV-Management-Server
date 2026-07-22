@@ -1,6 +1,6 @@
 import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import prisma from './src/db.js';
 import createAuthRouter from './src/routes/auth.js';
 import attributeRouter from './src/routes/attribute.js';
@@ -15,50 +15,30 @@ import googleAuthManager from './src/config/passport.js';
 dotenv.config();
 
 const app = express();
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
 
-    const isAllowed = 
-      origin.endsWith('.vercel.app') || 
-      origin.includes('localhost');
-
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-
-  allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With', 
-    'Accept', 
-    'Cache-Control', 
-    'Pragma'
-  ],
-  optionsSuccessStatus: 200
-};
-
-// CORS Middleware
-app.use(cors(corsOptions));
-
-// Safe Preflight Handler for Serverless
-app.options(/(.*)/, cors(corsOptions));
+app.use(cors({
+  origin: 'https://cv-management-client.vercel.app', // Your client's origin
+  credentials: true
+}));
 
 app.use(express.json());
 
+app.options('*', cors());
+
 // Routes
 app.use('/api/auth', createAuthRouter(googleAuthManager, prisma));
-app.use('/api/admin/attribute', attributeRouter);
-app.use('/api/admin/applications', applicationCvRouter);
-app.use('/api/admin/cvs', cvRouter);
-app.use('/api/admin/positions', positionRouter);
+app.use('/api/attributes', attributeRouter);
+app.use('/api/cv', cvRouter);
+app.use('/api/positions', positionRouter);
+app.use('/api/positions/:id', positionRouter);
+app.use('/api/applications', applicationCvRouter);
+
+// Admin Routes
 app.use('/api/admin/users', usersRouter);
 app.use('/api/admin/stats', statsRouter);
+app.use('/api/cv/all/published', cvRouter);
+app.use('/api/positions/all', positionRouter);
+app.use('/api/applications/all', applicationCvRouter);
 // app.use('/api/comments', commentsRouter);
 
 app.get('/', (req, res) => {
