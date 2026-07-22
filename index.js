@@ -15,7 +15,6 @@ import googleAuthManager from './src/config/passport.js';
 dotenv.config();
 
 const app = express();
-
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -32,7 +31,15 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With', 
+    'Accept', 
+    'Cache-Control', 
+    'Pragma'
+  ],
   optionsSuccessStatus: 200
 };
 
