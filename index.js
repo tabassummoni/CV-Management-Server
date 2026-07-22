@@ -53,12 +53,12 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', createAuthRouter(googleAuthManager, prisma));
-app.use('/api/attribute', attributeRouter);
-app.use('/api/applications', applicationCvRouter);
-app.use('/api/cv', cvRouter);
-app.use('/api/position', positionRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/stats', statsRouter);
+app.use('/api/admin/attribute', attributeRouter);
+app.use('/api/admin/applications', applicationCvRouter);
+app.use('/api/admin/cvs', cvRouter);
+app.use('/api/admin/positions', positionRouter);
+app.use('/api/admin/users', usersRouter);
+app.use('/api/admin/stats', statsRouter);
 // app.use('/api/comments', commentsRouter);
 
 app.get('/', (req, res) => {
