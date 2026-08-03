@@ -9,6 +9,7 @@ import cvRouter from './src/routes/cv.js';
 import positionRouter from './src/routes/position.js';
 import usersRouter from './src/routes/users.js';
 import statsRouter from './src/routes/stats.js';
+import salesforceRouter from './src/routes/salesforce.js';
 // import commentsRouter from './src/routes/comments.js';
 import googleAuthManager from './src/config/passport.js';
 
@@ -16,14 +17,26 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({
-  origin: 'https://cv-management-client.vercel.app', // Your client's origin
-  credentials: true
-}));
+const allowedOrigins = [
+  'https://cv-management-client.vercel.app', // Deployed Client
+  'http://localhost:5173'                     // Local Development
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
 
 app.use(express.json());
 
-app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
 
 // Routes
 app.use('/api/auth', createAuthRouter(googleAuthManager, prisma));
@@ -31,6 +44,7 @@ app.use('/api/attributes', attributeRouter);
 app.use('/api/cv', cvRouter);
 app.use('/api/positions', positionRouter);
 app.use('/api/positions/:id', positionRouter);
+app.use('/api/salesforce', salesforceRouter);
 app.use('/api/applications', applicationCvRouter);
 
 // Admin Routes
