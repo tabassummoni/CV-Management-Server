@@ -9,6 +9,7 @@
     "prisma": "prisma",
     "db:push": "prisma db push",
     "generate": "prisma generate",
+    "build": "prisma generate",
     "postinstall": "prisma generate"
   },
   "dependencies": {
