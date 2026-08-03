@@ -18,6 +18,7 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
+  'https://cv-management-client-ioczoxia2-tabassummonis-projects.vercel.app',
   'https://cv-management-client.vercel.app', // Deployed Client
   'http://localhost:5173'                     // Local Development
 ];
