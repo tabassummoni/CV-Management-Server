@@ -16,6 +16,7 @@
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
+    "debug": "^4.4.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsforce": "^3.10.19",
